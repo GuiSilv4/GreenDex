@@ -13,7 +13,12 @@ const AppRoutes = () => {
       headerShown: false,
       gestureEnabled: true,
       gestureDirection: 'vertical-inverted',
-      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS
+      cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+      cardOverlayEnabled: true,
+      cardStyle: {
+        backgroundColor: 'transparent'
+      }
+
     }}>
       <AppStack.Screen name="Dashboard" component={DashboardRoutes} />
       <AppStack.Screen name="Plant" component={Plant} />

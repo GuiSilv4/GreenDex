@@ -4,12 +4,14 @@ import { StyleSheet, Text, View, TouchableWithoutFeedback, Dimensions } from 're
 const { width, height } = Dimensions.get('window');
 
 export default function ListSquareIcon(props) {
+
   const [selected, setSelected] = useState(props.selected ? props.selected : false);
 
   return (
-    <TouchableWithoutFeedback onPress={() => { setSelected(!selected) }}>
+    <TouchableWithoutFeedback onPress={() => { setSelected(!selected); props.onPress(); }}>
       <View style={[styles.container, selected ? styles.selected : styles.normal]}>
-        <Text style={[styles.text, selected ? styles.textSelected : styles.normal]}>
+        <Text style={[styles.text, selected ? styles.textSelected : styles.normal]}
+        >
           {props.text}
         </Text>
       </View>
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF'
   },
   text: {
-    fontSize: height / 40,
+    fontSize: height / 9 / 5,
     color: '#FFF',
     fontWeight: 'bold',
     textAlign: 'center'

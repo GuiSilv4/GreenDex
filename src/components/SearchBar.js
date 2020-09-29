@@ -8,6 +8,8 @@ const SearchBar = (props) => {
     <View style={[styles.container, props.style]}>
       <TextInput
         style={styles.textInputStyle}
+        onChangeText={props.onChangeText}
+        value={props.value}
         placeholder='Search Here'
       />
     </View>
@@ -29,7 +31,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.02,
+    shadowOpacity: 0.09,
     shadowRadius: 2.22,
 
     elevation: 3,

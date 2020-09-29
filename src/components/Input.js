@@ -88,16 +88,21 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     height: height / 19,
+
+
   },
   icon: {
-    marginBottom: Platform.OS === 'ios' ? 5 : 0,
     marginLeft: 10,
   },
+
   textInput: {
+    flex: 1,
+    height: '100%',
     marginLeft: 10,
     flex: 1,
+    paddingTop: 0,
     color: colorTheme,
-    marginBottom: Platform.OS === 'ios' ? 4 : 0,
+    marginTop: Platform.OS === 'ios' ? 0 : 15,
   }
 
 });

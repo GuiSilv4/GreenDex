@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,12 +9,13 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-  PixelRatio
+  FlatList
 } from 'react-native';
 import Tag from '../components/Tag';
 import PlantCare from '../components/PlantCare';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ListSquareIcon from '../components/ListSquareIcon';
+import { usePlantLists } from '../contexts/PlantLists';
 
 Icon.loadFont();
 
@@ -27,6 +28,28 @@ const Plant = (props) => {
   const { navigation, route } = props;
   const plantData = route.params;
 
+  const [selectedLists, setSelectedLists] = useState([0]);
+
+  const { addPlantToLists, plantLists } = usePlantLists();
+
+  const handleAddPlant = async () => {
+    await addPlantToLists(plantData, selectedLists);
+    navigation.goBack();
+  };
+
+  const selectList = (item) => {
+    if (!selectedLists.includes(item)) {
+      setSelectedLists([...selectedLists, item]);
+    }
+    else {
+      const newArray = [...selectedLists];
+      const index = newArray.indexOf(item);
+      if (index > -1) {
+        newArray.splice(index, 1);
+      }
+      setSelectedLists(newArray);
+    }
+  }
   return (
     <View style={styles.container}>
       <View style={[StyleSheet.absoluteFill, styles.background]} />
@@ -57,13 +80,22 @@ const Plant = (props) => {
 
         <Text style={styles.chooseText}>Choose the list</Text>
         <View style={styles.listContainer}>
-          <ListSquareIcon text='My Plants' selected />
-          <ListSquareIcon text='Wanna Catch' />
-          <ListSquareIcon text='Knowledge' />
-          <ListSquareIcon text='10"' />
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            data={plantLists}
+            keyExtractor={(item, index) => String(index)}
+            renderItem={({ item, index }) => <ListSquareIcon text={item.name} selected={selectedLists.includes(index)}
+              onPress={() => { selectList(index) }} />
+            }
+          >
+          </FlatList>
         </View>
       </SafeAreaView>
-      <View style={styles.bottomView}><Text style={styles.bottomText}>Add to List + </Text></View>
+      <TouchableOpacity style={{ flex: 1 }} delayPressIn={0}
+        onPress={handleAddPlant}>
+        <View style={styles.bottomView}><Text style={styles.bottomText}>Add to List + </Text></View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -87,9 +119,8 @@ const styles = StyleSheet.create({
     height: Platform.OS === 'ios' ? height / 2 : height / 1.8,
     left: (width / 2) + 10,
     width: width / 2,
-    marginTop: height / PixelRatio.get() / 4,
-    borderWidth,
-
+    marginTop: Platform.OS === 'ios' ? height / 9 : height / 14,
+    borderWidth
   },
 
   bottomView: {
@@ -182,7 +213,7 @@ const styles = StyleSheet.create({
 
   chooseText: {
     fontFamily: 'Merriweather-Bold',
-    fontSize: 24,
+    fontSize: height / 30,
     color: '#FFF',
     marginTop: defaultMargin + 15,
   }
