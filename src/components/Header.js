@@ -31,5 +31,4 @@ const styles = StyleSheet.create({
     top: 0,
   },
 
-
 });

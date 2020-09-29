@@ -15,13 +15,14 @@ const activeBackgroundColor = '#ffffff';
 const inactiveBackgroundCOlor = '#0f3f3c';
 const iconSize = (height / width) * 11;
 
-const DashboardRoutes = () => {
+const DashboardRoutes = ({ navigation }) => {
 
   const { signOut } = useAuth();
+  const { navigate } = navigation;
 
   const handleLogout = () => {
     signOut();
-    return null;
+    return (<View />);
   }
 
   const screenOptions = (iconName) => {

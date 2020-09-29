@@ -5,6 +5,7 @@ import axios from 'axios';
 const AuthContext = createContext({
   signed: false,
   user: null,
+  token: null,
 });
 
 const AppName = 'GreenDex';
@@ -12,6 +13,7 @@ const AppName = 'GreenDex';
 export const AuthProvider = (props) => {
 
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   //FUNCAO QUE VERIFICA E CARREGA O USER E A TOKEN DO ASYNC STORAGE 
@@ -22,6 +24,7 @@ export const AuthProvider = (props) => {
 
     if (storageUser && storageToken) {
       axios.defaults.headers.Authorization = `Bearer ${storageToken}`;
+      setToken(storageToken)
       setUser(JSON.parse(storageUser));
       setLoading(false);
     } else {
@@ -43,6 +46,7 @@ export const AuthProvider = (props) => {
 
     //seta o usuario no contexto
     setUser(user);
+    setToken(token);
 
     //seta no axios o token que veio de resposta apos autenticacao
     //axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -58,17 +62,17 @@ export const AuthProvider = (props) => {
   }
 
   //FUNCAO DE LOGOUT PARA LIMPAR O ASYNC STORAGE E LIMPAR O USUARIO
-  function signOut() {
+  async function signOut() {
     //limpa async storage
-    AsyncStorage.clear().then(() => {
-      setUser(null);
+    await AsyncStorage.removeItem(`@${AppName}:token`).then(() => {
+      setToken(null);
     });
   }
 
   //encapsula o provider passando para os filhos os valores e funcoes abaixo
   return (
     <AuthContext.Provider
-      value={{ signed: !!user, user, signIn, signOut, loading }}>
+      value={{ signed: !!token, user, signIn, signOut, loading }}>
       {props.children}
     </AuthContext.Provider>
   );

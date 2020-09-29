@@ -19,14 +19,14 @@ import { useAuth } from '../contexts/auth';
 
 const { width, height } = Dimensions.get('window');
 
-const Login = () => {
+const Login = ({ navigation }) => {
 
   const [backgroundY] = useState(new Animated.Value(0));
   const [buttonsOpacity] = useState(new Animated.Value(1));
   const [CloseButtomOpacity] = useState(new Animated.Value(0));
   const [inputsZIndex] = useState(new Animated.Value(-1));
   const [showRegister, setShowRegister] = useState(false);
-
+  const { navigate } = navigation;
   const { signIn } = useAuth();
   const showInputs = (formType) => {
     if (formType === 'register') {
@@ -97,6 +97,7 @@ const Login = () => {
 
     };
     await signIn(response);
+    navigate('App');
   };
 
   return (
