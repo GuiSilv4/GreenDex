@@ -87,7 +87,6 @@ const Login = ({ navigation }) => {
   };
 
   const handleLogin = async () => {
-    console.log('Loggin');
     const response = {
       token: 'Bearer ufgdhdgkjhsdkfgjhgsdgdfg',
       user: {

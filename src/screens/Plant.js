@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -26,15 +26,33 @@ const defaultMargin = height / 40;
 const Plant = (props) => {
 
   const { navigation, route } = props;
-  const plantData = route.params;
+
+  const plantData = route.params.plant;
+  const action = route.params.action;
 
   const [selectedLists, setSelectedLists] = useState([0]);
+  const [actionText, setActionText] = useState('Add');
+  const { addPlantToLists, removePlantFromList, plantLists } = usePlantLists();
+  const [thisPlantLists, setThisPlantLists] = useState(plantLists);
 
-  const { addPlantToLists, plantLists } = usePlantLists();
 
-  const handleAddPlant = async () => {
-    await addPlantToLists(plantData, selectedLists);
-    navigation.goBack();
+  useEffect(() => {
+    if (action === 'remove') {
+      setActionText('Remove');
+      const newArray = [...thisPlantLists];
+      setThisPlantLists(newArray.filter((item, index) => index === route.params.listIndex));
+    }
+  }, []);
+
+
+  const handleAddOrRemovePlant = async () => {
+    if (action === 'remove') {
+      await removePlantFromList(plantData, route.params.listIndex);
+      navigation.goBack();
+    } else {
+      await addPlantToLists(plantData, selectedLists);
+      navigation.goBack();
+    }
   };
 
   const selectList = (item) => {
@@ -83,7 +101,7 @@ const Plant = (props) => {
           <FlatList
             showsHorizontalScrollIndicator={false}
             horizontal={true}
-            data={plantLists}
+            data={thisPlantLists}
             keyExtractor={(item, index) => String(index)}
             renderItem={({ item, index }) => <ListSquareIcon text={item.name} selected={selectedLists.includes(index)}
               onPress={() => { selectList(index) }} />
@@ -93,8 +111,8 @@ const Plant = (props) => {
         </View>
       </SafeAreaView>
       <TouchableOpacity style={{ flex: 1 }} delayPressIn={0}
-        onPress={handleAddPlant}>
-        <View style={styles.bottomView}><Text style={styles.bottomText}>Add to List + </Text></View>
+        onPress={handleAddOrRemovePlant}>
+        <View style={styles.bottomView}><Text style={styles.bottomText}>{actionText} to List + </Text></View>
       </TouchableOpacity>
     </View>
   );

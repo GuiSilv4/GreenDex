@@ -14,7 +14,7 @@ const PlantIcon = (props) => {
 
   return (
     <TouchableWithoutFeedback onPress={props.onPress}>
-      <View style={[styles.container, { height: imageHeight }]}>
+      <View style={[styles.container, { height: imageHeight }, props.style]}>
         <Image source={backgroundImage}
           style={styles.imageStyle} />
         <Text style={styles.text}>

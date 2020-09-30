@@ -9,7 +9,6 @@ const MainStack = createStackNavigator();
 
 const Routes = () => {
   const { signed, loading } = useAuth();
-  console.log(signed);
   if (loading) {
     return (
       //ver react-native-splash-screen

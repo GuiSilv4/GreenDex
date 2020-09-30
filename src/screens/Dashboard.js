@@ -67,7 +67,7 @@ const Dashboard = (props) => {
                 .filter((_, i) => i % 2 === 0)
                 .map((plant, index) =>
                   <PlantIcon key={index} name={plant.name} image={plant.backgroundImage}
-                    onPress={() => { navigate('Plant', plant) }} />
+                    onPress={() => { navigate('Plant', { plant, action: 'add' }) }} />
                 )}
             </View>
             <View style={{ width: width / 2 - 25 }}>
@@ -75,7 +75,7 @@ const Dashboard = (props) => {
                 .filter((_, i) => i % 2 !== 0)
                 .map((plant, index) =>
                   <PlantIcon key={index} name={plant.name} image={plant.backgroundImage}
-                    onPress={() => { navigate('Plant', plant) }} />
+                    onPress={() => { navigate('Plant', { plant, action: 'add' }) }} />
                 )}
             </View>
           </View>

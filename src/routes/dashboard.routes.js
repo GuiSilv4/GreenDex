@@ -2,11 +2,9 @@ import React from 'react';
 import { Dimensions, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Dashboard from '../screens/Dashboard';
-import Home from '../screens/Home';
+import MyLists from '../screens/MyLists';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../contexts/auth';
-
-Icon.loadFont();
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,7 +25,7 @@ const DashboardRoutes = ({ navigation }) => {
 
   const screenOptions = (iconName) => {
     return {
-      tabBarLabel: 'Home', tabBarIcon: ({ color, size, focused }) => (
+      tabBarLabel: '', tabBarIcon: ({ color, size, focused }) => (
         <View style={[styles.button, { backgroundColor: focused ? activeBackgroundColor : inactiveBackgroundCOlor }]} >
           <Icon name={iconName} size={iconSize} color={color} />
         </View>
@@ -66,19 +64,19 @@ const DashboardRoutes = ({ navigation }) => {
         options={screenOptions('search')}
       />
       <TabStack.Screen
-        name="Home"
-        component={Home}
-        options={screenOptions('home')}
+        name="MyLists"
+        component={MyLists}
+        options={screenOptions('list')}
       />
       <TabStack.Screen
-        name="Home2"
-        component={Home}
-        options={screenOptions('heart')}
+        name="MyLists2"
+        component={MyLists}
+        options={screenOptions('clock-o')}
       />
       <TabStack.Screen
         name="Teste3"
         component={handleLogout}
-        options={screenOptions('gear')}
+        options={screenOptions('sign-out')}
       ></TabStack.Screen>
     </TabStack.Navigator>
   );

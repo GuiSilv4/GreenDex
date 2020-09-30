@@ -52,16 +52,22 @@ export const PlantListsProvider = (props) => {
 
         await AsyncStorage.setItem(
           `@${AppName}:plantLists`,
-          JSON.stringify(plantLists),
+          JSON.stringify(newArray),
         );
       };
     })
   };
 
-  const removePlantFromList = (item) => {
-    const index = plantLists.indexOf(5);
+  const removePlantFromList = async (item, listIndex) => {
+    const index = plantLists[listIndex].data.indexOf(item);
     if (index > -1) {
-      plantLists.splice(index, 1);
+      const newArray = [...plantLists];
+      newArray[listIndex].data.splice(index, 1);
+      setPlantLists(newArray);
+      await AsyncStorage.setItem(
+        `@${AppName}:plantLists`,
+        JSON.stringify(newArray),
+      );
     }
   }
 
