@@ -4,12 +4,12 @@ import { StyleSheet, Text, View, StatusBar, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-const Header = ({ children }) => {
+const Header = ({ children, style }) => {
 
   return (
     <>
       <StatusBar barStyle='light-content' backgroundColor='#09252a' />
-      <View style={styles.header} >
+      <View style={[styles.header, style]} >
         {children}
       </View>
     </>

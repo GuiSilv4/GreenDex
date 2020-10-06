@@ -1,53 +1,63 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import BottomPage from '../components/BottomPage';
 import Header from '../components/Header';
 import MainContainer from '../components/MainContainer';
+import PlantList from '../components/PlantList';
+import ListTitle from '../components/ListTitle';
 import { usePlantLists } from '../contexts/PlantLists';
-import PlantIcon from '../components/PlantIcon';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+
 
 const { height } = Dimensions.get('window');
 
-const MyLists = (props) => {
-
-  const { navigate } = props.navigation;
-
+const MyLists = () => {
   const { plantLists, cleanAllLists } = usePlantLists();
 
-  return (
-    <View style={{ flex: 1 }}>
-      <Header>
-        <Text style={styles.headerText}> My Lists</Text>
-      </Header>
-      <MainContainer style={{ alignItems: 'flex-start' }}>
-        <ScrollView style={{ marginTop: 30 }} showsVerticalScrollIndicator={false}>
-          {plantLists
-            .filter(list => list.name != 'Reminders' && list.data.length)
-            .map((list, listIndex) => (
-              <View style={{ flex: 1 }} key={listIndex}>
-                <View style={[styles.listLabelContainer, { marginTop: listIndex > 0 ? height / 30 : 0 }]}>
-                  <Text style={styles.listLabel}>{list.name}</Text>
-                </View>
-                <ScrollView
-                  horizontal={true}
-                  style={styles.horizontalScrollView}
-                  showsHorizontalScrollIndicator={false}>
-                  {list.data.map((plant, index) => (
-                    <PlantIcon key={index} name={plant.name} image={plant.backgroundImage}
-                      onPress={() => { navigate('Plant', { plant, listIndex, action: 'remove' }) }} style={{ marginRight: 5 }} />
-                  ))}
-                  <Text style={styles.text}> </Text>
-                </ScrollView>
-              </View>
-            ))}
-          <View>
-            <TouchableOpacity onPress={cleanAllLists}>
-              <Text style={{ color: 'red', marginTop: 10, fontWeight: 'bold' }}>Limpar Lista</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+  const { data, indices } = useMemo(() => {
+    const items = new Array;
+    plantLists
+      .filter(list => list.key != 'REMINDERS' && list.data.length)
+      .map((list, listIndex) => {
+        items.push({
+          key: list.key,
+          render: () => <ListTitle index={listIndex}>{list.name}</ListTitle>,
+          isTitle: true,
+        });
+        items.push({
+          key: "C" + listIndex,
+          render: () => <PlantList data={list.data} listIndex={listIndex} />,
+        });
+      });
+    items.push({
+      key: 'Bottom',
+      render: () => <View style={{ height: 50, width: 100 }} />,
+    });
+    const indices = new Array;
+    items.forEach((item, index) => item.isTitle && indices.push(index));
+    return {
+      data: items,
+      indices,
+    };
+  }, [plantLists]);
 
+  return (
+    <View style={{ flex: 1, backgroundColor: '#032021' }}>
+      <Header style={styles.header}>
+        <Text style={styles.headerText}> My Lists</Text>
+        <TouchableOpacity onPress={cleanAllLists}
+          style={{ backgroundColor: 'red', width: 10, height: 10, borderRadius: 5, marginLeft: 20 }} />
+      </Header>
+      <MainContainer style={styles.mainContainer}>
+        <FlatList
+          data={data}
+          renderItem={({ item }) => item.render()}
+          keyExtractor={(item) => item.key}
+          stickyHeaderIndices={indices}
+          showsVerticalScrollIndicator={false}
+          style={{ marginTop: 18 }}
+        />
       </MainContainer>
       <BottomPage />
     </View>
@@ -55,13 +65,16 @@ const MyLists = (props) => {
 }
 
 const styles = StyleSheet.create({
-  listLabelContainer: {
-    marginVertical: 5,
+  mainContainer: {
+    alignItems: 'flex-start', paddingHorizontal: 0,
+    height: ((height / 8) * 6) + 30,
+    top: (height / 8) - 20,
   },
-  listLabel: {
-    fontFamily: 'Merriweather-Bold',
-    fontSize: height / 35,
-    color: '#0a2129'
+  header: {
+    height: height / 8,
+    flexDirection: 'row',
+    paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
+    alignItems: 'center',
   },
   headerText: {
     fontFamily: 'Merriweather-Bold',
@@ -69,11 +82,6 @@ const styles = StyleSheet.create({
     fontSize: height * 0.035,
     marginTop: Platform.OS === 'ios' ? height * 0.011 : - height * 0.011
   },
-  horizontalScrollView: {
-    flex: 1,
-    backgroundColor: '#FFF',
-    borderRadius: 20,
-    padding: 10
-  }
-})
+});
+
 export default MyLists;
