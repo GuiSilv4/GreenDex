@@ -33,7 +33,7 @@ export const PlantListsProvider = (props) => {
 
   const [plantLists, setPlantLists] = useState(lists);
 
-  async function loadStorageData() {
+  const loadStorageData = async () => {
     const storagePlatLists = await AsyncStorage.getItem(`@${AppName}:plantLists`);
 
     if (storagePlatLists) {
@@ -47,10 +47,17 @@ export const PlantListsProvider = (props) => {
 
 
   const addPlantToLists = async (item, listsIndex) => {
-    await listsIndex.map(async (listIndex) => {
-      if (!plantLists[listIndex].data.id === item.id) {
-        console.log(listIndex, plantLists[listIndex].data);
-        console.log(item);
+    listsIndex.map(async (listIndex) => {
+
+      let include = false;
+
+      plantLists[listIndex].data.map((plant) => {
+        if (plant.id === item.id) {
+          include = true;
+        };
+      });
+
+      if (!include) {
         const newArray = [...plantLists];
         newArray[listIndex].data.push(item);
         setPlantLists(newArray);
@@ -60,8 +67,9 @@ export const PlantListsProvider = (props) => {
           JSON.stringify(newArray),
         );
       };
-    })
+    });
   };
+
 
   const removePlantFromList = async (item, listIndex) => {
     const index = plantLists[listIndex].data.indexOf(item);
