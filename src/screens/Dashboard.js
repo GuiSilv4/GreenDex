@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  TouchableWithoutFeedback,
   StyleSheet,
   Dimensions,
-  StatusBar,
   ScrollView, Platform
 } from 'react-native';
 import PlantIcon from '../components/PlantIcon';
@@ -15,12 +13,14 @@ import BottomPage from '../components/BottomPage';
 import Header from '../components/Header';
 import { useAuth } from '../contexts/auth';
 import MainContainer from '../components/MainContainer';
+import { usePlantLists } from '../contexts/PlantLists';
 
 const { width, height } = Dimensions.get('window');
 
 const Dashboard = (props) => {
   const { user } = useAuth();
   const { navigate } = props.navigation;
+  const { requestCalendarPermission } = usePlantLists();
 
   const [search, setSearch] = useState('');
   const [filteredDataSource, setFilteredDataSource] = useState([]);
@@ -29,6 +29,7 @@ const Dashboard = (props) => {
   useEffect(() => {
     setFilteredDataSource(plantData);
     setMasterDataSource(plantData);
+    requestCalendarPermission();
   }, []);
 
   const searchFilterFunction = (text) => {

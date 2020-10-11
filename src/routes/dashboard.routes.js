@@ -3,6 +3,8 @@ import { Dimensions, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Dashboard from '../screens/Dashboard';
 import MyLists from '../screens/MyLists';
+import Reminders from '../screens/Reminders';
+import Teste from '../screens/Teste';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useAuth } from '../contexts/auth';
 
@@ -13,11 +15,8 @@ const activeBackgroundColor = '#ffffff';
 const inactiveBackgroundCOlor = '#0f3f3c';
 const iconSize = (height / width) * 11;
 
-const DashboardRoutes = ({ navigation }) => {
-
+const DashboardRoutes = () => {
   const { signOut } = useAuth();
-  const { navigate } = navigation;
-
   const handleLogout = () => {
     signOut();
     return (<View />);
@@ -26,10 +25,12 @@ const DashboardRoutes = ({ navigation }) => {
   const screenOptions = (iconName) => {
     return {
       tabBarLabel: '', tabBarIcon: ({ color, size, focused }) => (
-        <View style={[styles.button, { backgroundColor: focused ? activeBackgroundColor : inactiveBackgroundCOlor }]} >
+        <View style={[styles.button, {
+          backgroundColor: focused ? activeBackgroundColor : inactiveBackgroundCOlor
+        }]} >
           <Icon name={iconName} size={iconSize} color={color} />
         </View>
-      )
+      ),
     }
   };
 
@@ -55,7 +56,7 @@ const DashboardRoutes = ({ navigation }) => {
         tabStyle: {
           backgroundColor: 'transparent',
           paddingLeft: 25
-        }
+        },
       }}
     >
       <TabStack.Screen
@@ -69,8 +70,8 @@ const DashboardRoutes = ({ navigation }) => {
         options={screenOptions('list')}
       />
       <TabStack.Screen
-        name="MyLists2"
-        component={MyLists}
+        name="Reminders"
+        component={Reminders}
         options={screenOptions('clock-o')}
       />
       <TabStack.Screen
