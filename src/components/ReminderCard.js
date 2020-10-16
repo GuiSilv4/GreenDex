@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Dimensions, Switch } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Switch, ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getHours, getMinutes, getDay } from 'date-fns';
 import { usePlantLists } from '../contexts/PlantLists';
+import TimePicker from '../components/TimePicker';
 
 Icon.loadFont();
 
@@ -12,15 +13,19 @@ const { height, width } = Dimensions.get('window');
 const ReminderCard = (props) => {
   const [isEnabled, setIsEnabled] = useState(true);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  const { deleteEvent } = usePlantLists();
-
+  const { deleteEvent, isLoadingUptadeHour } = usePlantLists();
   const { reminder } = props;
-
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const reminderWeekDay = getDay(new Date(reminder.startDate));
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   return (
     <View style={styles.container}>
+      {showTimePicker &&
+        <TimePicker
+          event={reminder}
+          showTimePicker={showTimePicker}
+          setShowTimePicker={() => { setShowTimePicker(!showTimePicker) }} />}
       <View style={styles.header}>
         <Text style={styles.headerText}>{props.children}</Text>
         <TouchableOpacity onPress={() => { deleteEvent(reminder.id) }}>
@@ -29,11 +34,17 @@ const ReminderCard = (props) => {
       </View>
       <View style={styles.body}>
         <Icon name="watering-can" size={height / 22} color='#2d2d2d' />
-        <Text style={styles.hourText}>
-          {getHours(new Date(reminder.startDate))}:
-          {(getMinutes(new Date(reminder.startDate)) < 10 ? '0' : '')
-            + getMinutes(new Date(reminder.startDate))}
-        </Text>
+        <TouchableOpacity onPress={() => { setShowTimePicker(!showTimePicker) }}>
+          {isLoadingUptadeHour ? <ActivityIndicator size='small' color='#09252a' /> :
+            <Text style={styles.hourText}>
+              {
+                getHours(new Date(reminder.startDate))}:
+              {(getMinutes(new Date(reminder.startDate)) < 10 ? '0' : '')
+                + getMinutes(new Date(reminder.startDate))
+              }
+            </Text>
+          }
+        </TouchableOpacity>
         <Switch
           trackColor={{ false: "#767577", true: "#536e74" }}
           thumbColor={isEnabled ? "#123139" : "#f4f3f4"}

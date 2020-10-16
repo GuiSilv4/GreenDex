@@ -70,7 +70,7 @@ export default function Input(props) {
         onChangeText={props.onChangeText}
         secureTextEntry={props.secure ? !showPassword : false}
         selectTextOnFocus={false}
-
+        keyboardType={props.keyboardType ? props.keyboardType : 'default'}
       />
       {props.secure && eyeIcon()}
     </View>

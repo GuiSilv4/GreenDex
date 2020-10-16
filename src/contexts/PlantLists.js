@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNCalendarEvents from "react-native-calendar-events";
-import { setDay, format } from 'date-fns';
+import { setDay, format, getHours, getMinutes } from 'date-fns';
 import { Platform } from 'react-native';
 
 const PlantListsContext = createContext({
@@ -39,6 +39,8 @@ export const PlantListsProvider = (props) => {
   const [bestDayHour, setBestDayHour] = useState(20);
   const [greenDexCalendarId, setGreenDexCalendarId] = useState("0");
   const [hasCalendarPermission, setHasCalendarPermission] = useState(false);
+  const [isLoadingUptadeHour, setIsLoadingUpdateHour] = useState(false);
+
 
   const loadStorageData = async () => {
     const storagePlantLists = await AsyncStorage.getItem(`@${AppName}:plantLists`);
@@ -67,33 +69,50 @@ export const PlantListsProvider = (props) => {
     loadReminders(365);
   }, [greenDexCalendarId]);
 
+  const setBestDayHourFunction = (param) => {
+    if (isNaN(param))
+      return;
+    setBestDayHour(param);
+  };
 
-  const getWeekDay = (number) => {
-    let day = null;
-    switch (number) {
-      case 0:
-        day = "Sunday";
-        break;
-      case 1:
-        day = "Monday";
-        break;
-      case 2:
-        day = "Tuesday";
-        break;
-      case 3:
-        day = "Wednesday";
-        break;
-      case 4:
-        day = "Thursday";
-        break;
-      case 5:
-        day = "Friday";
-        break;
-      case 6:
-        day = "Saturday";
-    }
-    return day;
+  const setEventHour = async (event, newHour) => {
+    setIsLoadingUpdateHour(true);
+    const eventStarDate = new Date(event.startDate);
+    const eventEndDate = new Date(event.endDate);
+
+    let startDate = new Date(
+      eventStarDate.getFullYear(),
+      eventStarDate.getMonth(),
+      eventStarDate.getDate(),
+      getHours(newHour),
+      getMinutes(newHour),
+      0, 0
+
+    );
+
+    let endDate = new Date(
+      eventEndDate.getFullYear(),
+      eventEndDate.getMonth(),
+      eventEndDate.getDate(),
+      getHours(newHour) + 1,
+      getMinutes(newHour),
+      0, 0
+    );
+
+    await saveEvent(event.title, startDate, endDate, event.id);
+    setTimeout(() => {
+      setIsLoadingUpdateHour(false);
+    }, 500);
+
   }
+
+  const setBestWeekDayFunction = (param) => {
+    if (isNaN(param)
+      || param < 0
+      || param > 6)
+      return;
+    setBestWeekDay(param);
+  };
 
   const loadReminders = async (days) => {
 
@@ -127,18 +146,7 @@ export const PlantListsProvider = (props) => {
     loadReminders(365);
   }
 
-  const createEvent = async (item) => {
-
-    const title = "Watering " + item.name;
-    const d = setDay(new Date(), bestWeekDay);
-
-    let startDate = new Date(
-      d.getFullYear(), d.getMonth(), d.getDate(), bestDayHour, 0, 0, 0
-    );
-
-    let endDate = new Date(
-      d.getFullYear(), d.getMonth(), d.getDate(), bestDayHour + 1, 0, 0, 0
-    );
+  const saveEvent = async (title, startDate, endDate, id = null) => {
 
     if (Platform.OS === 'ios') {
       startDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
@@ -159,13 +167,31 @@ export const PlantListsProvider = (props) => {
     if (Platform.OS === 'ios')
       details = { ...details, endDate };
 
-    await RNCalendarEvents.saveEvent(title, details);
+    if (id !== null)
+      details = { ...details, id }
+    console.log(title, details)
+    //await RNCalendarEvents.saveEvent(title, details);
     loadReminders(365);
+  }
+
+  const createEvent = async (item) => {
+
+    const title = "Watering " + item.name;
+    const d = setDay(new Date(), bestWeekDay);
+
+    let startDate = new Date(
+      d.getFullYear(), d.getMonth(), d.getDate(), bestDayHour, 0, 0, 0
+    );
+
+    let endDate = new Date(
+      d.getFullYear(), d.getMonth(), d.getDate(), bestDayHour + 1, 0, 0, 0
+    );
+
+    await saveEvent(title, startDate, endDate);
   }
 
   const setCalendarId = async (id) => {
     setGreenDexCalendarId(id);
-    //await AsyncStorage.setItem(`@${AppName}:calendarId`, JSON.stringify(id));
   }
 
   const requestCalendarPermission = async () => {
@@ -273,11 +299,18 @@ export const PlantListsProvider = (props) => {
         remindersList,
         plantLists,
         hasCalendarPermission,
+        isLoadingUptadeHour,
+        bestWeekDay,
+        bestDayHour,
         requestCalendarPermission,
         addPlantToLists,
         removePlantFromList,
         cleanAllLists,
-        deleteEvent
+        deleteEvent,
+        setBestDayHourFunction,
+        setBestWeekDayFunction,
+        setEventHour,
+
       }}>{
         props.children}
     </PlantListsContext.Provider>
