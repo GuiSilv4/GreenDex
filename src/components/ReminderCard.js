@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getHours, getMinutes, getDay } from 'date-fns';
 import { usePlantLists } from '../contexts/PlantLists';
 import TimePicker from '../components/TimePicker';
+import WeekDayPicker from '../components/WeekDayPicker';
 
 Icon.loadFont();
 
@@ -13,17 +14,29 @@ const { height, width } = Dimensions.get('window');
 const ReminderCard = (props) => {
   const [isEnabled, setIsEnabled] = useState(true);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  const { deleteEvent, isLoadingUptadeHour } = usePlantLists();
+  const { deleteEvent, setEventHour } = usePlantLists();
   const { reminder } = props;
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const reminderWeekDay = getDay(new Date(reminder.startDate));
   const [showTimePicker, setShowTimePicker] = useState(false);
 
+  const [isLoadingUpdateHour, setIsLoadingUptadeHour] = useState(false);
+  const updateEventHour = async (date) => {
+
+    setIsLoadingUptadeHour(true);
+
+    await setEventHour(reminder, date);
+
+    setTimeout(() => {
+      setIsLoadingUptadeHour(false);
+    }, 500);
+  }
+
   return (
     <View style={styles.container}>
       {showTimePicker &&
         <TimePicker
-          event={reminder}
+          setEventHour={updateEventHour}
           showTimePicker={showTimePicker}
           setShowTimePicker={() => { setShowTimePicker(!showTimePicker) }} />}
       <View style={styles.header}>
@@ -35,7 +48,7 @@ const ReminderCard = (props) => {
       <View style={styles.body}>
         <Icon name="watering-can" size={height / 22} color='#2d2d2d' />
         <TouchableOpacity onPress={() => { setShowTimePicker(!showTimePicker) }}>
-          {isLoadingUptadeHour ? <ActivityIndicator size='small' color='#09252a' /> :
+          {isLoadingUpdateHour ? <ActivityIndicator size='small' color='#09252a' /> :
             <Text style={styles.hourText}>
               {
                 getHours(new Date(reminder.startDate))}:
@@ -54,16 +67,12 @@ const ReminderCard = (props) => {
         />
       </View>
       <View style={styles.weekdays}>
-        {weekDays.map((item, index) => (
-          <View key={index} style={{ flexDirection: 'row' }}>
-            <TouchableOpacity>
-              <Text style={[styles.weekdaysText, { color: index === reminderWeekDay ? 'green' : 'black' }]}>
-                {item}
-              </Text>
-            </TouchableOpacity>
-            <Text style={styles.weekdaysText}>{index !== weekDays.length - 1 ? ', ' : ""}</Text>
-          </View>
-        ))}
+        <WeekDayPicker
+          value={reminderWeekDay}
+          onChange={() => { }}
+          textStyle={styles.weekdaysText}
+          separator={true}
+          activeColor='green' />
       </View>
     </View>
   );
@@ -91,7 +100,6 @@ const styles = StyleSheet.create({
   weekdaysText: {
     fontWeight: 'bold',
     fontSize: height / 55,
-
   },
   header: {
     height: '30%',

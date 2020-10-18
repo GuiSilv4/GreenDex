@@ -39,8 +39,6 @@ export const PlantListsProvider = (props) => {
   const [bestDayHour, setBestDayHour] = useState(20);
   const [greenDexCalendarId, setGreenDexCalendarId] = useState("0");
   const [hasCalendarPermission, setHasCalendarPermission] = useState(false);
-  const [isLoadingUptadeHour, setIsLoadingUpdateHour] = useState(false);
-
 
   const loadStorageData = async () => {
     const storagePlantLists = await AsyncStorage.getItem(`@${AppName}:plantLists`);
@@ -76,7 +74,7 @@ export const PlantListsProvider = (props) => {
   };
 
   const setEventHour = async (event, newHour) => {
-    setIsLoadingUpdateHour(true);
+
     const eventStarDate = new Date(event.startDate);
     const eventEndDate = new Date(event.endDate);
 
@@ -100,9 +98,6 @@ export const PlantListsProvider = (props) => {
     );
 
     await saveEvent(event.title, startDate, endDate, event.id);
-    setTimeout(() => {
-      setIsLoadingUpdateHour(false);
-    }, 500);
 
   }
 
@@ -139,10 +134,11 @@ export const PlantListsProvider = (props) => {
     }
   };
 
-  const deleteEvent = (id) => {
-    RNCalendarEvents.removeEvent(id, {
+  const deleteEvent = async (id) => {
+    await RNCalendarEvents.removeEvent(id, {
       futureEvents: true
     });
+
     loadReminders(365);
   }
 
@@ -170,14 +166,14 @@ export const PlantListsProvider = (props) => {
     if (id !== null)
       details = { ...details, id }
     console.log(title, details)
-    //await RNCalendarEvents.saveEvent(title, details);
+    await RNCalendarEvents.saveEvent(title, details);
     loadReminders(365);
   }
 
   const createEvent = async (item) => {
 
     const title = "Watering " + item.name;
-    const d = setDay(new Date(), bestWeekDay);
+    const d = setDay(new Date(), bestWeekDay, { weekStartsOn: bestWeekDay + 1 });
 
     let startDate = new Date(
       d.getFullYear(), d.getMonth(), d.getDate(), bestDayHour, 0, 0, 0
@@ -299,7 +295,6 @@ export const PlantListsProvider = (props) => {
         remindersList,
         plantLists,
         hasCalendarPermission,
-        isLoadingUptadeHour,
         bestWeekDay,
         bestDayHour,
         requestCalendarPermission,
@@ -309,8 +304,7 @@ export const PlantListsProvider = (props) => {
         deleteEvent,
         setBestDayHourFunction,
         setBestWeekDayFunction,
-        setEventHour,
-
+        setEventHour
       }}>{
         props.children}
     </PlantListsContext.Provider>

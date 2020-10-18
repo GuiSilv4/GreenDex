@@ -44,13 +44,20 @@ const RemindersSettings = (props) => {
           keyboardType='numeric'
         />
         <Text>Best Watering Week Day</Text>
-        <WeekDayPicker />
-        <Input
-          placeholder="Best Watering Week Day"
+        <WeekDayPicker
           value={bestWeekDayValue}
-          onChangeText={setBestWeekDayValue}
-          keyboardType='numeric'
+          onChange={setBestWeekDayValue}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: 'green',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 3,
+          }}
         />
+
         <Button title="Save" onPress={saveSettings}></Button>
       </View>
     </Modal>

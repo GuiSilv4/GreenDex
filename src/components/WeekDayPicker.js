@@ -1,21 +1,50 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
-const WeekDayPicker = () => {
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const reminderWeekDay = 2;
+const WeekDayPicker = (props) => {
+
+  const separator = props.separator ? props.separator : false;
+
+  const initalState = [
+    { name: "Sun", active: false },
+    { name: "Mon", active: false },
+    { name: "Tue", active: false },
+    { name: "Wed", active: false },
+    { name: "Thu", active: false },
+    { name: "Fri", active: false },
+    { name: "Sat", active: false }];
+
+  const [weekDays, setWeekDays] = useState(initalState);
+
+  useEffect(() => {
+    setActive(props.value);
+  }, []);
+
+  const setActive = (index) => {
+    const newArray = [...weekDays];
+    newArray.map(item => item.active = false);
+    newArray[index].active = true;
+    setWeekDays(newArray);
+    props.onChange(index.toString());
+  };
 
   return (
     <View style={styles.weekdays}>
       {weekDays.map((item, index) => (
-        <View key={index} style={styles.weekdayContainer}>
-          <TouchableOpacity delayPressIn={0}>
-            <Text style={[styles.weekdaysText, { color: index === reminderWeekDay ? 'red' : 'white' }]}>
-              {item}
+        <TouchableOpacity delayPressIn={0}
+          onPress={() => { setActive(index) }}>
+          <View key={index} style={[styles.weekdayContainer, props.style]}>
+            <Text style={[styles.weekdaysText, props.textStyle,
+            {
+              color: item.active ? (props.activeColor ? props.activeColor : 'red')
+                : (props.inactiveColor ? props.inactiveColor : 'black')
+            }]}>
+              {item.name}
             </Text>
-          </TouchableOpacity>
-        </View>
+            {separator && index !== weekDays.length - 1 && <Text>, </Text>}
+          </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
@@ -25,19 +54,14 @@ export default WeekDayPicker;
 
 const styles = StyleSheet.create({
   weekdays: {
+    flexDirection: 'row',
+  },
+
+  weekdayContainer: {
     flexDirection: 'row'
   },
-  weekdayContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'green',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 3
-  },
+
   weekdaysText: {
-    color: "#FFF"
   }
 
 
