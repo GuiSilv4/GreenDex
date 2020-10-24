@@ -14,7 +14,7 @@ const { height, width } = Dimensions.get('window');
 const ReminderCard = (props) => {
   const [isEnabled, setIsEnabled] = useState(true);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  const { deleteEvent, setEventHour } = usePlantLists();
+  const { deleteEvent, setEventHour, setEventWeekDay } = usePlantLists();
   const { reminder } = props;
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const reminderWeekDay = getDay(new Date(reminder.startDate));
@@ -30,6 +30,10 @@ const ReminderCard = (props) => {
     setTimeout(() => {
       setIsLoadingUptadeHour(false);
     }, 500);
+  };
+
+  const changeReminderWeekDay = async (reminder, reminderWeekDay) => {
+    await setEventWeekDay(reminder, reminderWeekDay);
   }
 
   return (
@@ -41,7 +45,7 @@ const ReminderCard = (props) => {
           setShowTimePicker={() => { setShowTimePicker(!showTimePicker) }} />}
       <View style={styles.header}>
         <Text style={styles.headerText}>{props.children}</Text>
-        <TouchableOpacity onPress={() => { deleteEvent(reminder.id) }}>
+        <TouchableOpacity onPress={() => { deleteEvent(reminder) }}>
           <Icon name="trash-can-outline" size={height / 40} color="#FFF" />
         </TouchableOpacity>
       </View>
@@ -69,7 +73,7 @@ const ReminderCard = (props) => {
       <View style={styles.weekdays}>
         <WeekDayPicker
           value={reminderWeekDay}
-          onChange={() => { }}
+          onChange={(newWeekDay) => { changeReminderWeekDay(reminder, newWeekDay); }}
           textStyle={styles.weekdaysText}
           separator={true}
           activeColor='green' />

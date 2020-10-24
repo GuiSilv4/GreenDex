@@ -48,12 +48,12 @@ const MyLists = () => {
 
   }, [plantLists]);
 
+  //<TouchableOpacity onPress={cleanAllLists} style={{ backgroundColor: 'red', width: 10, height: 10, borderRadius: 5, marginLeft: 20 }} />
+
   return (
     <View style={{ flex: 1, backgroundColor: '#f0f2f7' }}>
       <Header style={styles.header}>
         <Text style={styles.headerText}> My Lists</Text>
-        <TouchableOpacity onPress={cleanAllLists}
-          style={{ backgroundColor: 'red', width: 10, height: 10, borderRadius: 5, marginLeft: 20 }} />
       </Header>
       <MainContainer style={styles.mainContainer}>
         <ScrollView

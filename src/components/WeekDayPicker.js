@@ -26,15 +26,15 @@ const WeekDayPicker = (props) => {
     newArray.map(item => item.active = false);
     newArray[index].active = true;
     setWeekDays(newArray);
-    props.onChange(index.toString());
   };
+
 
   return (
     <View style={styles.weekdays}>
       {weekDays.map((item, index) => (
         <TouchableOpacity delayPressIn={0}
-          onPress={() => { setActive(index) }}>
-          <View key={index} style={[styles.weekdayContainer, props.style]}>
+          onPress={() => { setActive(index); props.onChange(index); }} key={index}>
+          <View style={[styles.weekdayContainer, props.style]}>
             <Text style={[styles.weekdaysText, props.textStyle,
             {
               color: item.active ? (props.activeColor ? props.activeColor : 'red')

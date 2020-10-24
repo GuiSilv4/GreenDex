@@ -47,8 +47,9 @@ export const PlantListsProvider = (props) => {
     //if (storageCalendarId)
     //setGreenDexCalendarId(JSON.parse(storageCalendarId));
 
-    if (storagePlantLists)
+    if (storagePlantLists) {
       setPlantLists(JSON.parse(storagePlantLists));
+    }
 
   }
 
@@ -68,9 +69,46 @@ export const PlantListsProvider = (props) => {
   }, [greenDexCalendarId]);
 
   const setBestDayHourFunction = (param) => {
-    if (isNaN(param))
+    if (isNaN(param)) {
       return;
+    }
     setBestDayHour(param);
+  };
+
+  const getNewWeekDayDate = (weekDay) => {
+
+    const weekStartsOn = weekDay < 6 ? weekDay + 1 : 0;
+    return setDay(new Date(), weekDay, { weekStartsOn });
+  };
+
+  const setEventWeekDay = async (event, newWeekDay) => {
+
+    //console.log(event.title, newWeekDay)
+
+    const d = getNewWeekDayDate(newWeekDay);
+    const hour = new Date(event.startDate);
+
+    const startDate = new Date(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      getHours(hour),
+      getMinutes(hour),
+      0, 0
+
+    );
+
+    const endDate = new Date(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      getHours(hour) + 1,
+      getMinutes(hour),
+      0, 0
+    );
+
+    await saveEvent(event.title, startDate, endDate, event.id);
+
   };
 
   const setEventHour = async (event, newHour) => {
@@ -99,20 +137,22 @@ export const PlantListsProvider = (props) => {
 
     await saveEvent(event.title, startDate, endDate, event.id);
 
-  }
+  };
 
   const setBestWeekDayFunction = (param) => {
     if (isNaN(param)
       || param < 0
-      || param > 6)
+      || param > 6) {
       return;
+    }
     setBestWeekDay(param);
   };
 
   const loadReminders = async (days) => {
 
-    if (!hasCalendarPermission)
+    if (!hasCalendarPermission) {
       return null;
+    }
 
     if (greenDexCalendarId !== '0') {
       const date = new Date();
@@ -134,10 +174,16 @@ export const PlantListsProvider = (props) => {
     }
   };
 
-  const deleteEvent = async (id) => {
+  const deleteEvent = async ({ id, startDate }) => {
+
     await RNCalendarEvents.removeEvent(id, {
+      exceptionDate: startDate,
       futureEvents: true
     });
+
+    if (Platform.OS === 'android') {
+      await RNCalendarEvents.removeEvent(id);
+    };
 
     loadReminders(365);
   }
@@ -147,7 +193,9 @@ export const PlantListsProvider = (props) => {
     if (Platform.OS === 'ios') {
       startDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
       endDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-    }
+    } else {
+      startDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    };
 
     let details = {
       calendarId: greenDexCalendarId,
@@ -157,23 +205,44 @@ export const PlantListsProvider = (props) => {
         frequency: 'weekly',
         occurrence: 52,
       },
-      notes: title,
+      notes: title
     };
 
-    if (Platform.OS === 'ios')
+    if (Platform.OS === 'ios') {
       details = { ...details, endDate };
+    }
 
-    if (id !== null)
-      details = { ...details, id }
-    console.log(title, details)
-    await RNCalendarEvents.saveEvent(title, details);
+    if (id !== null) {
+      details = { ...details, id };
+    }
+
+    console.log(title, details);
+
+    await RNCalendarEvents.saveEvent(title, details).then(
+      result => console.log('sucesso', result),
+      result => console.log('erro 2', result),
+    );
+
+    /*     RNCalendarEvents.saveEvent('Title of event', {
+          calendarId: greenDexCalendarId,
+          startDate: '2020-08-19T19:26:00.000Z',
+          recurrenceRule: {
+            frequency: 'weekly',
+            occurrence: 52
+          },
+          notes: title
+        }).then(
+          result => console.log('sucesso', result),
+          result => console.log('erro 2', result),
+        ); */
+
     loadReminders(365);
   }
 
   const createEvent = async (item) => {
 
     const title = "Watering " + item.name;
-    const d = setDay(new Date(), bestWeekDay, { weekStartsOn: bestWeekDay + 1 });
+    const d = getNewWeekDayDate(bestWeekDay);
 
     let startDate = new Date(
       d.getFullYear(), d.getMonth(), d.getDate(), bestDayHour, 0, 0, 0
@@ -193,10 +262,11 @@ export const PlantListsProvider = (props) => {
   const requestCalendarPermission = async () => {
     await RNCalendarEvents.requestPermissions().then(
       (result) => {
-        if (result === 'authorized')
+        if (result === 'authorized') {
           setHasCalendarPermission(true);
-        else
+        } else {
           setHasCalendarPermission(false);
+        }
       },
       (result) => {
         console.error(result);
@@ -267,7 +337,6 @@ export const PlantListsProvider = (props) => {
     };
   };
 
-
   const removePlantFromList = async (item, listIndex) => {
     const index = plantLists[listIndex].data.indexOf(item);
     if (index > -1) {
@@ -304,7 +373,8 @@ export const PlantListsProvider = (props) => {
         deleteEvent,
         setBestDayHourFunction,
         setBestWeekDayFunction,
-        setEventHour
+        setEventHour,
+        setEventWeekDay
       }}>{
         props.children}
     </PlantListsContext.Provider>
