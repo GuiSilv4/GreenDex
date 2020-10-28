@@ -20,20 +20,28 @@ const ReminderCard = (props) => {
   const reminderWeekDay = getDay(new Date(reminder.startDate));
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const [isLoadingUpdateHour, setIsLoadingUptadeHour] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const updateEventHour = async (date) => {
 
-    setIsLoadingUptadeHour(true);
+    setIsLoading(true);
 
     await setEventHour(reminder, date);
 
     setTimeout(() => {
-      setIsLoadingUptadeHour(false);
+      setIsLoading(false);
     }, 500);
   };
 
   const changeReminderWeekDay = async (reminder, reminderWeekDay) => {
+
+    setIsLoading(true);
+
     await setEventWeekDay(reminder, reminderWeekDay);
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   }
 
   return (
@@ -49,48 +57,52 @@ const ReminderCard = (props) => {
           <Icon name="trash-can-outline" size={height / 40} color="#FFF" />
         </TouchableOpacity>
       </View>
-      <View style={styles.body}>
-        <Icon name="watering-can" size={height / 22} color='#2d2d2d' />
-        <TouchableOpacity onPress={() => { setShowTimePicker(!showTimePicker) }}>
-          {isLoadingUpdateHour ? <ActivityIndicator size='small' color='#09252a' /> :
-            <Text style={styles.hourText}>
-              {
-                getHours(new Date(reminder.startDate))}:
+      {isLoading ? <ActivityIndicator size='large' color='#09252a' style={{ flex: 1 }} /> :
+        <>
+          <View style={styles.body}>
+            <Icon name="watering-can" size={height / 22} color='#2d2d2d' />
+            <TouchableOpacity onPress={() => { setShowTimePicker(!showTimePicker) }}>
+              <Text style={styles.hourText}>
+                {
+                  getHours(new Date(reminder.startDate))}:
               {(getMinutes(new Date(reminder.startDate)) < 10 ? '0' : '')
-                + getMinutes(new Date(reminder.startDate))
-              }
-            </Text>
-          }
-        </TouchableOpacity>
-        <Switch
-          trackColor={{ false: "#767577", true: "#536e74" }}
-          thumbColor={isEnabled ? "#123139" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
-      </View>
-      <View style={styles.weekdays}>
-        <WeekDayPicker
-          value={reminderWeekDay}
-          onChange={(newWeekDay) => { changeReminderWeekDay(reminder, newWeekDay); }}
-          textStyle={styles.weekdaysText}
-          separator={true}
-          activeColor='green' />
-      </View>
+                  + getMinutes(new Date(reminder.startDate))
+                }
+              </Text>
+            </TouchableOpacity>
+            <Switch
+              trackColor={{ false: "#767577", true: "#536e74" }}
+              thumbColor={isEnabled ? "#123139" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+            />
+          </View>
+          <View style={styles.weekdays}>
+            <WeekDayPicker
+              value={reminderWeekDay}
+              onChange={(newWeekDay) => { changeReminderWeekDay(reminder, newWeekDay); }}
+              textStyle={styles.weekdaysText}
+              separator={true}
+              activeColor='green' />
+          </View>
+        </>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     width: width - 30,
     alignSelf: 'center',
     height: height / 7,
-    backgroundColor: "#09252a",
+    backgroundColor: "#c8c9c9",
     borderRadius: 15,
     marginTop: 15,
+    justifyContent: 'center',
   },
+
   weekdays: {
     backgroundColor: "#b3b5b5",
     flex: 1,
@@ -106,12 +118,15 @@ const styles = StyleSheet.create({
     fontSize: height / 55,
   },
   header: {
+    backgroundColor: "#09252a",
     height: '30%',
     width: '100%',
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
   },
   headerText: {
     fontFamily: 'Merriweather-Regular',

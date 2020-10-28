@@ -216,11 +216,9 @@ export const PlantListsProvider = (props) => {
       details = { ...details, id };
     }
 
-    console.log(title, details);
-
     await RNCalendarEvents.saveEvent(title, details).then(
-      result => console.log('sucesso', result),
-      result => console.log('erro 2', result),
+      result => { }, //console.log('sucesso', result)
+      result => { }, //console.log('erro 2', result)
     );
 
     /*     RNCalendarEvents.saveEvent('Title of event', {
