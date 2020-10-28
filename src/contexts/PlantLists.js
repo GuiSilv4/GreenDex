@@ -50,8 +50,7 @@ export const PlantListsProvider = (props) => {
     if (storagePlantLists) {
       setPlantLists(JSON.parse(storagePlantLists));
     }
-
-  }
+  };
 
   useEffect(() => {
     loadStorageData();
@@ -195,6 +194,7 @@ export const PlantListsProvider = (props) => {
       endDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
     } else {
       startDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      endDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     };
 
     let details = {
@@ -205,6 +205,9 @@ export const PlantListsProvider = (props) => {
         frequency: 'weekly',
         occurrence: 52,
       },
+      alarms: [{
+        date: Plataform.OS === 'ios' ? -5 : 5
+      }],
       notes: title
     };
 
