@@ -13,7 +13,6 @@ const { width, height } = Dimensions.get('window');
 const TabStack = createBottomTabNavigator();
 const activeBackgroundColor = '#ffffff';
 const inactiveBackgroundCOlor = '#0f3f3c';
-const iconSize = (height / width) * 11;
 
 const DashboardRoutes = () => {
   const { signOut } = useAuth();
@@ -24,11 +23,11 @@ const DashboardRoutes = () => {
 
   const screenOptions = (iconName) => {
     return {
-      tabBarLabel: '', tabBarIcon: ({ color, size, focused }) => (
+      tabBarLabel: '', tabBarIcon: ({ color, focused }) => (
         <View style={[styles.button, {
           backgroundColor: focused ? activeBackgroundColor : inactiveBackgroundCOlor
         }]} >
-          <Icon name={iconName} size={iconSize} color={color} />
+          <Icon name={iconName} size={(height / width) * 11} color={color} />
         </View>
       ),
     }
@@ -44,7 +43,6 @@ const DashboardRoutes = () => {
           fontSize: 20,
         },
         showLabel: false,
-        adaptive: true,
         style: {
           position: 'absolute',
           backgroundColor: 'transparent',
@@ -55,7 +53,8 @@ const DashboardRoutes = () => {
         },
         tabStyle: {
           backgroundColor: 'transparent',
-          paddingLeft: 25
+          paddingLeft: 25,
+          height: height / 8,
         },
       }}
     >

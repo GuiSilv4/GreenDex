@@ -5,7 +5,7 @@ import BottomPage from '../components/BottomPage';
 import Header from '../components/Header';
 import MainContainer from '../components/MainContainer';
 import PlantList from '../components/PlantList';
-import ListTitle from '../components/ListTitle';
+import ListTitle from '../components/ListTitleV2';
 import { usePlantLists } from '../contexts/PlantLists';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
@@ -59,7 +59,7 @@ const MyLists = () => {
         <ScrollView
           stickyHeaderIndices={indices}
           showsVerticalScrollIndicator={false}
-          style={{ marginTop: 18 }}
+          style={{ marginTop: 10 }}
         >
           {data.map((item) => (<View key={item.key}>{item.render()}</View>))}
         </ScrollView>

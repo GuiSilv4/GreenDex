@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, StyleSheet, Dimensions } from 'react-native';
 import PlantIcon from '../components/PlantIcon';
+import PlantListCard from '../components/PlantListCard';
 import { useNavigation } from '@react-navigation/native';
 import { usePlantLists } from '../contexts/PlantLists';
 
@@ -16,18 +17,28 @@ const PlantList = (props) => {
   return (
 
     <View style={styles.container}>
+      {false && <PlantIcon key={index} name={plant.name} image={plant.backgroundImage}
+        onPress={() => {
+          navigate('Plant', {
+            plant, listIndex: props.listIndex,
+            action: 'remove'
+          })
+        }} style={{ marginRight: 15, marginBottom: 0 }} />}
       <ScrollView
         horizontal={true}
         style={styles.horizontalScrollView}
         showsHorizontalScrollIndicator={false}>
         {plantLists[props.listIndex].data.map((plant, index) => (
-          <PlantIcon key={index} name={plant.name} image={plant.backgroundImage}
+          <PlantListCard key={index}
+            name={plant.name}
+            image={plant.image}
             onPress={() => {
               navigate('Plant', {
                 plant, listIndex: props.listIndex,
                 action: 'remove'
-              })
-            }} style={{ marginRight: 15, marginBottom: 0 }} />
+              });
+            }}
+          />
         ))}
         <View style={{ height: 10, width: 25 }}></View>
       </ScrollView>
@@ -42,10 +53,8 @@ const styles = StyleSheet.create({
   },
 
   horizontalScrollView: {
-    paddingHorizontal: 15,
-    marginHorizontal: 10,
-    paddingTop: 15,
-    paddingBottom: 25,
+    paddingHorizontal: 20,
+    paddingBottom: 15,
   }
 });
 export default PlantList;
