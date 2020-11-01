@@ -18,9 +18,7 @@ const PlantListCard = ({ onPress, image, name }) => {
           locations={[0.1, 0.5, 1]}
           colors={['#0e4e3b', '#337864', '#10906a']}
           style={styles.insideContainer}>
-          <View style={styles.name} >
-            <Text style={styles.nameText}>{name}</Text>
-          </View>
+          <Text numberOfLines={1} style={styles.nameText}>{name}</Text>
         </LinearGradient>
       </View>
     </TouchableWithoutFeedback>
@@ -54,12 +52,12 @@ const styles = StyleSheet.create({
   nameText: {
     color: "#FFF",
     fontWeight: "bold",
+    textAlign: 'center',
     textShadowColor: 'rgba(0, 0, 0, 0.45)',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 15,
     fontSize: 15,
-
-  }
+  },
 });
 
 export default PlantListCard;
